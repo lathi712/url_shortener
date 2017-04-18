@@ -6,7 +6,7 @@ const validurl = require("valid-url");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mlabUrl = "mongodb://root:qwerty@ds161950.mlab.com:61950/urls";
+const mlabUrl = process.env.MONGODB_URI ||"mongodb://localhost:27017/images";
 const MongoClient = mongodb.MongoClient;
 
 app.set('view engine','pug');
@@ -57,7 +57,9 @@ app.get('/:short',(req,res)=>{
             var params = req.params.short;
             var findLink = (db,callback)=>{
               collection.findOne({"short_url":params},(err,doc)=>{
-                  
+                  if(err){
+                      return res.status(400).send(err);
+                  }
                  if(doc!=null){
                      console.log(doc.url);
                      res.redirect(doc.url);
